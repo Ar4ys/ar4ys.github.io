@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Mishka!</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+  <style>
+    html, body {
+      background-color: #282b30;
+      margin: 0;
+      padding: 0;
+    }
+    code.command:hover {
+      background-color: #7289DA;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <p>
+    ЧаВо — <code class='command'>m/faq</code><br>
+    Остановить игру — <code class='command'>m/stop</code><br>
+    Описания всех игр — <code class='command'>m/desc</code><br>
+    Изменить язык Мишке — <code class='command'>m/lang</code><br>
+    Для получения списка команд используйте — <code class='command'>m/help</code><br>
+  </p>
+  <script>
+    document.querySelectorAll('.command').forEach(button => {
+      button.addEventListener('click', async () => {
+        try {
+          navigator.clipboard.writeText(button.innerText)
+          console.log('Copying to clipboard was successful!')
+        } catch (e) {
+          console.error('Error while copying to clipboard:', e)
+        }
+      })
+    })
+  </script>
+</body>
+</html>
