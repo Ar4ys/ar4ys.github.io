@@ -6,6 +6,8 @@
   <title>Mishka!</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'> -->
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css'>
   <style>
     @font-face {
       font-family: "Exo 2";
@@ -21,29 +23,59 @@
     }
 
     code {
-      background-color: #36393F;
+      background-color: #7289DA;
       padding: 1px 2px;
       border-radius: 3px;
-    }
-
-    code.command:hover {
-      background-color: #7289DA;
-      cursor: pointer;
+      padding: 3px;
     }
 
     p {
       margin: 0;
+      line-height: 140%;
+    }
+
+    .command-container {
+      /* display: flex; */
+      max-width: max-content;
+      flex-wrap: wrap;
+    }
+
+    .command-container > .command {
+      background-color: #36393f;
+      padding: 0.5em;
+      margin: 10px;
+      border-radius: .25rem;
+      transition: all .1s ease;
+    }
+
+    .command-container > .command:hover {
+      transform: scale(1.05);
+      background-color: #7289DA;
+      cursor: pointer;
+    }
+
+    .command-container > .command.copied {
+      background-color: #43B581;
+    }
+
+    .command > .name {
+      margin: 0 10px;
+      font-weight: 700;
+    }
+
+    .command > .description {
+      opacity: .5;
     }
   </style>
 </head>
 <body>
-  <p>
-    ЧаВо — <code class='command'>m/faq</code><br>
-    Остановить игру — <code class='command'>m/stop</code><br>
-    Описания всех игр — <code class='command'>m/desc</code><br>
-    Изменить язык Мишке — <code class='command'>m/lang</code><br>
-    Для получения списка команд используйте — <code class='command'>m/help</code><br>
-  </p>
+  <div class="command-container">
+    <!-- <div class="command">
+      <i class="icon fas fa-copy"></i>
+      <span class="name">m/faq</span>
+      <span class="description">ЧаВо</span>
+    </div> -->
+  </div>
   <script>
     const copyToClipboard = message => {
       const textArea = document.createElement("textarea")
@@ -64,8 +96,52 @@
       document.body.removeChild(textArea)
     }
 
+    const createCommand = ({ name, description }) => {
+      const command = document.createElement('div')
+      const icon = document.createElement('i')
+      const nameSpan = document.createElement('span')
+      const descriptionSpan = document.createElement('span')
+
+      command.className = 'command'
+      icon.className = 'icon fas fa-copy'
+      nameSpan.className = 'name'
+      descriptionSpan.className = 'description'
+
+      nameSpan.innerText = name
+      descriptionSpan.innerText = description
+
+      command.append(icon, nameSpan, descriptionSpan)
+
+      return command
+    }
+
+    const commands = [
+      { name: 'm/help', description: 'Список команд' },
+      { name: 'm/lang', description: 'Изменить язык Мишке' },
+      { name: 'm/desc', description: 'Описания всех игр' },
+      { name: 'm/stop', description: 'Остановить игру' },
+      { name: 'm/faq ' , description: 'Часто задаваемые вопросы' },
+    ]
+
+    commands.forEach(command => {
+      document.querySelector('.command-container').append(createCommand(command))
+    })
+
     document.querySelectorAll('.command').forEach(button => {
-      button.addEventListener('click', async () => copyToClipboard(button.innerText))
+      button.addEventListener('click', async ({ currentTarget }) => {
+        currentTarget.classList.add('copied')
+        const description = currentTarget.querySelector('.description')
+        const name = currentTarget.querySelector('.name')
+        const descriptionText = description.innerText
+        description.innerText = 'Скопировано :3'
+
+        copyToClipboard(name.innerText)
+        const id = setTimeout(() => {
+          clearTimeout(id)
+          description.innerText = descriptionText
+          currentTarget.classList.remove('copied')
+        }, 1000)
+      })
     })
   </script>
 </body>
