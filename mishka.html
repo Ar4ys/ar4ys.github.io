@@ -22,18 +22,6 @@
       color: white;
     }
 
-    code {
-      background-color: #7289DA;
-      padding: 1px 2px;
-      border-radius: 3px;
-      padding: 3px;
-    }
-
-    p {
-      margin: 0;
-      line-height: 140%;
-    }
-
     .command-container {
       /* display: flex; */
       max-width: max-content;
@@ -41,6 +29,7 @@
     }
 
     .command-container > .command {
+      position: relative;
       background-color: #36393f;
       padding: 0.5em;
       margin: 10px;
@@ -54,10 +43,6 @@
       cursor: pointer;
     }
 
-    .command-container > .command.copied {
-      background-color: #43B581;
-    }
-
     .command > .name {
       margin: 0 10px;
       font-weight: 700;
@@ -65,18 +50,31 @@
 
     .command > .description {
       opacity: .5;
+      margin-right: 10px;
+    }
+
+    .command > .show-copied {
+      display: none;
+      position: absolute;
+      border-radius: inherit;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #43B581;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.1em;
+    }
+
+    .command.copied > .show-copied {
+      display: flex;
     }
   </style>
 </head>
 <body>
-  <div class="command-container">
-    <!-- <div class="command">
-      <i class="icon fas fa-copy"></i>
-      <span class="name">m/faq</span>
-      <span class="description">ЧаВо</span>
-    </div> -->
-  </div>
-  <script>
+  <div class="command-container"></div>
+  <script type="module">
     const copyToClipboard = message => {
       const textArea = document.createElement("textarea")
       textArea.value = message
@@ -96,25 +94,6 @@
       document.body.removeChild(textArea)
     }
 
-    const createCommand = ({ name, description }) => {
-      const command = document.createElement('div')
-      const icon = document.createElement('i')
-      const nameSpan = document.createElement('span')
-      const descriptionSpan = document.createElement('span')
-
-      command.className = 'command'
-      icon.className = 'icon fas fa-copy'
-      nameSpan.className = 'name'
-      descriptionSpan.className = 'description'
-
-      nameSpan.innerText = name
-      descriptionSpan.innerText = description
-
-      command.append(icon, nameSpan, descriptionSpan)
-
-      return command
-    }
-
     const commands = [
       { name: 'm/help', description: 'Список команд' },
       { name: 'm/lang', description: 'Изменить язык Мишке' },
@@ -123,8 +102,15 @@
       { name: 'm/faq ' , description: 'Часто задаваемые вопросы' },
     ]
 
-    commands.forEach(command => {
-      document.querySelector('.command-container').append(createCommand(command))
+    commands.forEach(({ name, description }) => {
+      document.querySelector('.command-container').innerHTML += `
+        <div class="command">
+          <i class="icon fas fa-copy"></i>
+          <span class="name">${name}</span>
+          <span class="description">${description}</span>
+          <div class="show-copied">Скопировано :3</div>
+        </div>
+      `
     })
 
     document.querySelectorAll('.command').forEach(button => {
@@ -132,15 +118,9 @@
         currentTarget.classList.add('copied')
         const description = currentTarget.querySelector('.description')
         const name = currentTarget.querySelector('.name')
-        const descriptionText = description.innerText
-        description.innerText = 'Скопировано :3'
 
         copyToClipboard(name.innerText)
-        const id = setTimeout(() => {
-          clearTimeout(id)
-          description.innerText = descriptionText
-          currentTarget.classList.remove('copied')
-        }, 1000)
+        setTimeout(() => currentTarget.classList.remove('copied'), 1000)
       })
     })
   </script>
