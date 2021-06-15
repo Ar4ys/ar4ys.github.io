@@ -45,23 +45,28 @@
     Для получения списка команд используйте — <code class='command'>m/help</code><br>
   </p>
   <script>
+    const copyToClipboard = message => {
+      const textArea = document.createElement("textarea")
+      textArea.value = message
+      textArea.style.opacity = "0"
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      try {
+        const successful = document.execCommand('copy')
+        const msg = successful ? 'successful' : 'unsuccessful'
+        console.log('Copying to clipboard was successful!')
+      } catch (e) {
+        console.error('Error while copying to clipboard:', e)
+      }
+
+      document.body.removeChild(textArea)
+    }
+
     document.querySelectorAll('.command').forEach(button => {
-      button.addEventListener('click', async () => {
-        try {
-          navigator.clipboard.writeText(button.innerText)
-          console.log('Copying to clipboard was successful!')
-        } catch (e) {
-          console.error('Error while copying to clipboard:', e)
-        }
-      })
+      button.addEventListener('click', async () => copyToClipboard(button.innerText))
     })
   </script>
 </body>
 </html>
-
-
-<style>
-  iframe.a {
-    border: none;
-  }
-</style>
