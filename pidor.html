@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Кто ты?</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+      html {
+        height: 100%;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+
+      .row {
+        display: flex;
+      }
+
+      .button {
+        flex-grow: 1;
+        margin: 2px;
+      }
+
+      .hidden {
+       display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h2 id="title">Ты пидор?</h2>
+      <div id="yes-no" class="row">
+        <button class="button" onclick="yes()">Да</button>
+        <button class="button" onclick="no()">Нет</button>
+      </div>
+      <div id="after-answer" class="row hidden">
+        <button class="button" onclick="reset()">Ну лан :(</button>
+      </div>
+    </div>
+    <script>
+      const title = document.querySelector('#title')
+      const yesNoButtons = document.querySelector('#yes-no')
+      const afterAnswerButtons = document.querySelector('#after-answer')
+
+      function no() {
+        title.innerHTML = 'Пидора ответ'
+        yesNoButtons.classList.add('hidden')
+        afterAnswerButtons.classList.remove('hidden')
+      }
+
+      function yes() {
+        title.innerHTML = 'Пизда'
+        yesNoButtons.classList.add('hidden')
+        afterAnswerButtons.classList.remove('hidden')
+      }
+
+      function reset() {
+        title.innerHTML = 'Ты пидор?'
+        yesNoButtons.classList.remove('hidden')
+        afterAnswerButtons.classList.add('hidden')
+      }
+    </script>
+  </body>
+</html>
