@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.daba5e85.css",
+    "main.js": "/static/js/main.a4364e6e.js",
+    "static/media/DeterminationSans.ttf": "/static/media/DeterminationSans.0a3415b10e08c046d07c.ttf",
+    "index.html": "/index.html",
+    "main.daba5e85.css.map": "/static/css/main.daba5e85.css.map",
+    "main.a4364e6e.js.map": "/static/js/main.a4364e6e.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.daba5e85.css",
+    "static/js/main.a4364e6e.js"
+  ]
+}
