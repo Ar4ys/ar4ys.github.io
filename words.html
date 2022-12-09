@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Words</title>
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    #view {
+      position: absolute;
+      top: 45%;
+      left: 45%;
+      z-index: 10;
+      cursor: grab;
+    }
+
+    #view>pre {
+      font-size: 32px;
+      user-select: none;
+    }
+
+    #controls {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      height: 10%;
+    }
+
+    #controls.reverse {
+      bottom: unset;
+      top: 5%;
+      left: 50%;
+    }
+
+    #controls>input {
+      width: 100%;
+      height: 100%;
+    }
+
+    #controls>button {
+      font-size: 20px;
+      margin-top: 10px;
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="view" draggable>
+    <pre>Placeholder</pre>
+  </div>
+  <div id="controls">
+    <input />
+  </div>
+</body>
+
+<script>
+  const divView = /** @type {HTMLDivElement} */ (document.querySelector('#view'))
+  const textView = /** @type {HTMLParagraphElement} */ (document.querySelector('#view > pre'))
+  const controls = /** @type {HTMLDivElement} */ (document.querySelector('#controls'))
+  const input = /** @type {HTMLTextAreaElement} */ (document.querySelector('#controls > input'))
+
+  divView.onmousedown = (event) => {
+    const shiftX = event.clientX - divView.getBoundingClientRect().left
+    const shiftY = event.clientY - divView.getBoundingClientRect().top
+
+    divView.style.cursor = 'grabbing'
+
+    moveAt(event.pageX, event.pageY)
+
+    function moveAt(pageX, pageY) {
+      divView.style.left = pageX - shiftX + 'px'
+      divView.style.top = pageY - shiftY + 'px'
+
+      const { height: pageHeight } = document.body.getBoundingClientRect()
+
+      if (pageY - shiftY > pageHeight / 2) {
+        controls.classList.add('reverse')
+      } else {
+        controls.classList.remove('reverse')
+      }
+    }
+
+    function onMouseMove(event) {
+      moveAt(event.pageX, event.pageY)
+    }
+
+    document.addEventListener('mousemove', onMouseMove)
+
+    divView.onmouseup = () => {
+      divView.style.cursor = 'grab'
+      document.removeEventListener('mousemove', onMouseMove)
+      divView.onmouseup = null
+    }
+  }
+
+  divView.ondragstart = () => false
+
+  input.addEventListener('keypress', (event) => {
+    if (event.code === 'Backslash') {
+      input.focus()
+      input.value = ''
+      event.preventDefault()
+    }
+  })
+
+
+  input.addEventListener('change', () => {
+
+  })
+
+  function updateTextView(text) {
+    textView.innerText = text
+  }
+
+  const data = {
+    'возникать': ['']
+  }
+
+  arise
+  arose
+  arisen.
+    возникать
+
+  будить; просыпаться
+  awake awoke awoke
+  awaked awaked
+
+  be
+  was, were
+  been
+  быть
+  bear
+  рождать
+  bore
+  born
+  bear
+  bore
+  borne
+  носить, выносить
+  бить
+  beaten
+  become
+  становиться
+  beat
+  become
+  begin
+  bend
+  beat
+    becamebegan bent
+  начинать, -ся
+  begun
+  bent
+  гнуть, -ся, сгибать, -ся
+  bind
+  связывать
+  bound
+  bound
+  bite
+  bit
+  bitten
+  bleed
+    кусатьистекать кровью
+  bled
+  bled
+  blow
+  blown
+  break
+  дуть
+  ломать
+  blew
+  broke
+  bred
+  broken
+  bred
+  выводить, разводить
+  breed
+  bring
+  broadcast
+    приноситьпередавать по ра
+  ДНО
+  brought
+  broadcast
+  broadcasted
+  built
+  burnt
+  build
+  строить
+  гореть, жечь
+  burn
+  brought
+  broadcast
+  broadcasted
+  built
+  burnt
+  burst
+  bought
+  cast
+  burst
+  разрываться
+  burst
+  buy
+  bought
+  cast
+  castcatchпокупать
+  бросать, кидать
+  ловить, схватывать
+  выбирать
+  прилипать, цеплять
+  caught
+  chose
+  choose
+  caught
+  chosen
+  clung
+  cling
+  clung
+  ся
+  come
+  приходить
+  came
+  come
+  cost
+  стоить
+  cost
+  cost
+  creep
+  ползать
+  crept
+  cut
+  cut.
+    crept
+  cut
+  dealt
+  резать
+  торговать; иметь
+  дело
+  deal
+  dealt
+  dig
+  копать
+  dug
+  dug
+
+</script>
+
+</html>
