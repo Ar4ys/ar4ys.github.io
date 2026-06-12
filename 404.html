@@ -5,7 +5,332 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>FlensMUN Schedule → Calendar</title>
 		<script src="./index.js" defer></script>
-		<link rel="stylesheet" href="./index.css" />
+		<style>
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			:root {
+				--navy: #1e3a5f;
+				--blue: #2b6cb0;
+				--gold: #c9a843;
+				--bg: #edf2f7;
+				--white: #ffffff;
+				--text: #1a202c;
+				--muted: #4a5568;
+				--border: #e2e8f0;
+				--green: #276749;
+				--red: #c53030;
+				--radius: 12px;
+				--shadow: 0 4px 18px rgba(0, 0, 0, 0.09);
+			}
+
+			body {
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+					Helvetica, Arial, sans-serif;
+				background: var(--bg);
+				color: var(--text);
+				min-height: 100vh;
+			}
+
+			/* ── Header ── */
+			.site-header {
+				background: linear-gradient(
+					135deg,
+					var(--navy) 0%,
+					var(--blue) 100%
+				);
+				color: white;
+				padding: 1.75rem 1.5rem 1.6rem;
+				text-align: center;
+				box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+			}
+			.site-header .hdr-icon {
+				font-size: 2.2rem;
+				line-height: 1;
+			}
+			.site-header h1 {
+				font-size: 1.55rem;
+				font-weight: 800;
+				margin-top: 0.4rem;
+				letter-spacing: -0.01em;
+			}
+			.site-header p {
+				font-size: 0.88rem;
+				opacity: 0.78;
+				margin-top: 0.3rem;
+			}
+
+			/* ── Layout ── */
+			.layout {
+				display: flex;
+				gap: 1.5rem;
+				max-width: 1040px;
+				margin: 2rem auto;
+				padding: 0 1.5rem 3rem;
+				align-items: flex-start;
+			}
+
+			/* ── Instructions panel ── */
+			.panel-instructions {
+				flex: 0 0 268px;
+				background: var(--white);
+				border-radius: var(--radius);
+				border-top: 4px solid var(--gold);
+				padding: 1.6rem 1.5rem;
+				box-shadow: var(--shadow);
+				position: sticky;
+				top: 1.5rem;
+			}
+			.panel-instructions h2 {
+				font-size: 0.72rem;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.09em;
+				color: var(--muted);
+				margin-bottom: 1.1rem;
+			}
+			.steps {
+				list-style: none;
+				counter-reset: step;
+				display: flex;
+				flex-direction: column;
+				gap: 0.85rem;
+				padding: 0;
+			}
+			.steps li {
+				counter-increment: step;
+				display: flex;
+				gap: 0.7rem;
+				font-size: 0.875rem;
+				color: var(--muted);
+				line-height: 1.5;
+				align-items: flex-start;
+			}
+			.steps li::before {
+				content: counter(step);
+				flex-shrink: 0;
+				width: 1.5rem;
+				height: 1.5rem;
+				background: var(--navy);
+				color: white;
+				border-radius: 50%;
+				font-size: 0.68rem;
+				font-weight: 700;
+				line-height: 1.5rem;
+				text-align: center;
+				margin-top: 0.04rem;
+			}
+			.steps li strong {
+				color: var(--text);
+			}
+
+			/* ── Form panel ── */
+			.panel-form {
+				flex: 1;
+				background: var(--white);
+				border-radius: var(--radius);
+				padding: 2rem;
+				box-shadow: var(--shadow);
+				min-width: 0;
+			}
+			.panel-form h2 {
+				font-size: 1.1rem;
+				font-weight: 700;
+				color: var(--navy);
+				margin-bottom: 1.1rem;
+			}
+
+			/* ── Textarea ── */
+			textarea {
+				display: block;
+				width: 100%;
+				height: 278px;
+				padding: 0.9rem 1rem;
+				background: #f8fafd;
+				border: 2px solid var(--border);
+				border-radius: 8px;
+				font-family: "SF Mono", "Fira Code", "Courier New", monospace;
+				font-size: 0.8rem;
+				line-height: 1.75;
+				color: var(--text);
+				resize: vertical;
+				transition:
+					border-color 0.2s,
+					background 0.2s;
+			}
+			textarea::placeholder {
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+				font-size: 0.875rem;
+				color: #a0aec0;
+				font-style: italic;
+			}
+			textarea:focus {
+				outline: none;
+				border-color: var(--blue);
+				background: white;
+			}
+
+			/* ── Clear button ── */
+			.btn-clear {
+				margin-top: 0.55rem;
+				padding: 0.3rem 0.8rem;
+				background: transparent;
+				border: 1.5px solid var(--border);
+				border-radius: 6px;
+				color: var(--muted);
+				font-size: 0.8rem;
+				cursor: pointer;
+				transition:
+					background 0.15s,
+					border-color 0.15s,
+					color 0.15s;
+			}
+			.btn-clear:hover {
+				background: #fff5f5;
+				border-color: #fc8181;
+				color: var(--red);
+			}
+
+			/* ── Validation message ── */
+			.msg-validation {
+				min-height: 1.5rem;
+				margin-top: 0.8rem;
+				font-size: 0.875rem;
+				font-weight: 600;
+			}
+			.msg-validation.valid {
+				color: var(--green);
+			}
+			.msg-validation.invalid {
+				color: var(--red);
+			}
+
+			/* ── Divider ── */
+			.divider {
+				border: none;
+				border-top: 1px solid var(--border);
+				margin: 1.3rem 0;
+			}
+
+			/* ── Notification row ── */
+			.notif-label {
+				display: inline-flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 0.45rem;
+				font-size: 0.9rem;
+				color: var(--muted);
+				cursor: pointer;
+				user-select: none;
+			}
+			.notif-label input[type="checkbox"] {
+				width: 1rem;
+				height: 1rem;
+				accent-color: var(--navy);
+				cursor: pointer;
+				flex-shrink: 0;
+			}
+			.notif-label input[type="number"] {
+				width: 56px;
+				padding: 0.2rem 0.35rem;
+				border: 1.5px solid var(--border);
+				border-radius: 5px;
+				font-size: 0.875rem;
+				text-align: center;
+				color: var(--text);
+				background: white;
+				transition:
+					border-color 0.2s,
+					opacity 0.2s;
+			}
+			.notif-label input[type="number"]:focus {
+				outline: none;
+				border-color: var(--blue);
+			}
+			.notif-label input[type="number"]:disabled {
+				opacity: 0.35;
+				cursor: not-allowed;
+			}
+
+			/* ── Download button ── */
+			.btn-download {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 0.5rem;
+				margin-top: 1.5rem;
+				width: 100%;
+				padding: 0.9rem 1rem;
+				background: linear-gradient(135deg, var(--navy), var(--blue));
+				color: white;
+				border: none;
+				border-radius: 8px;
+				font-size: 1rem;
+				font-weight: 700;
+				letter-spacing: 0.02em;
+				cursor: pointer;
+				transition:
+					opacity 0.2s,
+					box-shadow 0.2s,
+					transform 0.1s;
+				box-shadow: 0 4px 14px rgba(30, 58, 95, 0.32);
+			}
+			.btn-download:hover {
+				opacity: 0.91;
+				box-shadow: 0 6px 20px rgba(30, 58, 95, 0.42);
+			}
+			.btn-download:active {
+				transform: scale(0.985);
+			}
+
+			/* ── Error message ── */
+			.msg-error {
+				min-height: 1.4rem;
+				margin-top: 0.75rem;
+				font-size: 0.875rem;
+				color: var(--red);
+				font-weight: 500;
+			}
+
+			/* ── Footer ── */
+			.site-footer {
+				text-align: center;
+				padding: 1.25rem;
+				font-size: 0.78rem;
+				color: #a0aec0;
+			}
+
+			/* ── Responsive ── */
+			@media (max-width: 700px) {
+				.layout {
+					flex-direction: column;
+					margin: 1rem auto;
+					padding: 0 1rem 2rem;
+					gap: 1rem;
+				}
+				.panel-instructions {
+					flex: none;
+					width: 100%;
+					position: static;
+				}
+				.panel-form {
+					padding: 1.5rem;
+				}
+				.site-header h1 {
+					font-size: 1.25rem;
+				}
+				.site-header .hdr-icon {
+					font-size: 1.75rem;
+				}
+			}
+		</style>
 	</head>
 	<body>
 		<header class="site-header">
@@ -91,5 +416,270 @@
 			FlensMUN 2026 &nbsp;·&nbsp; June 11–14 &nbsp;·&nbsp; Flensburg,
 			Germany
 		</footer>
+
+		<script>
+			"use strict";
+
+			/* ─────────────────────────────────────
+CONFIG
+───────────────────────────────────── */
+			const DAY_MAP = {
+				Thursday: "20260611",
+				Friday: "20260612",
+				Saturday: "20260613",
+				Sunday: "20260614",
+			};
+
+			/* ─────────────────────────────────────
+DOM
+───────────────────────────────────── */
+			const $input = document.getElementById("scheduleInput");
+			const $clearBtn = document.getElementById("clearBtn");
+			const $valMsg = document.getElementById("validationMsg");
+			const $addNotif = document.getElementById("addNotif");
+			const $notifMin = document.getElementById("notifMinutes");
+			const $dlBtn = document.getElementById("downloadBtn");
+			const $errMsg = document.getElementById("errorMsg");
+
+			/* ─────────────────────────────────────
+LISTENERS
+───────────────────────────────────── */
+			$input.addEventListener("input", () => {
+				$errMsg.textContent = "";
+				validate();
+			});
+
+			$clearBtn.addEventListener("click", () => {
+				$input.value = "";
+				setVal("", "");
+				$errMsg.textContent = "";
+			});
+
+			$addNotif.addEventListener("change", () => {
+				$notifMin.disabled = !$addNotif.checked;
+			});
+
+			$dlBtn.addEventListener("click", onDownload);
+
+			/* ─────────────────────────────────────
+VALIDATION
+───────────────────────────────────── */
+			function setVal(text, cls) {
+				$valMsg.textContent = text;
+				$valMsg.className = "msg-validation" + (cls ? " " + cls : "");
+			}
+
+			function validate() {
+				const raw = $input.value.trim();
+				if (!raw) {
+					setVal("", "");
+					return;
+				}
+				try {
+					const s = parseSchedule(raw);
+					if (!s.events.length) throw new Error("empty");
+					setVal("✓ Everything looks good!", "valid");
+				} catch (_) {
+					setVal(
+						"✗ The schedule looks incorrect - ask Artur Yurko about it",
+						"invalid",
+					);
+				}
+			}
+
+			/* ─────────────────────────────────────
+PARSER
+───────────────────────────────────── */
+			function parseSchedule(rawText) {
+				const lines = rawText
+					.replace(/\r\n/g, "\n")
+					.replace(/\r/g, "\n")
+					.split("\n")
+					.map((l) => l.trim())
+					.filter((l) => l.length > 0);
+
+				if (lines.length < 3) throw new Error("too short");
+				if (!lines[0].startsWith("Zeitplan für"))
+					throw new Error("no header");
+
+				// Find "Tag: <DayName> …"
+				let dateStr = null,
+					tagIdx = -1;
+				for (let i = 0; i < lines.length; i++) {
+					if (!lines[i].startsWith("Tag:")) continue;
+					tagIdx = i;
+					for (const [day, d] of Object.entries(DAY_MAP)) {
+						if (lines[i].includes(day)) {
+							dateStr = d;
+							break;
+						}
+					}
+					break;
+				}
+				if (tagIdx === -1 || !dateStr) throw new Error("bad Tag");
+
+				// Skip optional column-header row ("Time  ToDo  Location")
+				let di = tagIdx + 1;
+				if (di < lines.length && /^time\b/i.test(lines[di])) di++;
+
+				// Parse event rows  — split on TAB or 2+ spaces
+				const TIME_RE = /^\d{2}:\d{2}$/;
+				const events = [];
+				for (let i = di; i < lines.length; i++) {
+					const cols = lines[i].split(/\t+|\s{2,}/);
+					const time = cols[0]?.trim() ?? "";
+					const title = cols[1]?.trim() ?? "";
+					const location =
+						cols.length > 2 ? cols.slice(2).join(" ").trim() : "";
+					if (!TIME_RE.test(time) || !title) continue;
+					events.push({ time, title, location });
+				}
+
+				if (!events.length) throw new Error("no events");
+				return { dateStr, events };
+			}
+
+			/* ─────────────────────────────────────
+ICS BUILDER
+───────────────────────────────────── */
+			function makeDT(dateStr, hhmm) {
+				const [h, m] = hhmm.split(":");
+				return `${dateStr}T${h}${m}00`;
+			}
+
+			function addMins(dateStr, hhmm, mins) {
+				const [h, m] = hhmm.split(":").map(Number);
+				const tot = h * 60 + m + mins;
+				const eh = Math.floor(tot / 60) % 24;
+				const em = tot % 60;
+				return `${dateStr}T${String(eh).padStart(2, "0")}${String(em).padStart(2, "0")}00`;
+			}
+
+			function escICS(s) {
+				return String(s)
+					.replace(/\\/g, "\\\\")
+					.replace(/;/g, "\\;")
+					.replace(/,/g, "\\,")
+					.replace(/\n/g, "\\n")
+					.replace(/\r/g, "");
+			}
+
+			function buildICS(sched, alarm, alarmMins) {
+				const { dateStr, events } = sched;
+				const stamp =
+					new Date()
+						.toISOString()
+						.replace(/[:\-]/g, "")
+						.split(".")[0] + "Z";
+
+				const rows = [
+					"BEGIN:VCALENDAR",
+					"VERSION:2.0",
+					"PRODID:-//FlensMUN Schedule Converter//EN",
+					"CALSCALE:GREGORIAN",
+					"METHOD:PUBLISH",
+					"X-WR-CALNAME:FlensMUN 2026",
+					"X-WR-TIMEZONE:Europe/Berlin",
+					// Minimal VTIMEZONE so TZID references resolve
+					"BEGIN:VTIMEZONE",
+					"TZID:Europe/Berlin",
+					"BEGIN:DAYLIGHT",
+					"TZOFFSETFROM:+0100",
+					"TZOFFSETTO:+0200",
+					"TZNAME:CEST",
+					"DTSTART:19700329T020000",
+					"RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3",
+					"END:DAYLIGHT",
+					"BEGIN:STANDARD",
+					"TZOFFSETFROM:+0200",
+					"TZOFFSETTO:+0100",
+					"TZNAME:CET",
+					"DTSTART:19701025T030000",
+					"RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10",
+					"END:STANDARD",
+					"END:VTIMEZONE",
+				];
+
+				events.forEach((ev, i) => {
+					const startDT = makeDT(dateStr, ev.time);
+
+					// End = next event's start; if same time or last event → +30 min (last → +60 min)
+					let endDT;
+					if (i + 1 < events.length) {
+						const nextDT = makeDT(dateStr, events[i + 1].time);
+						endDT =
+							nextDT > startDT
+								? nextDT
+								: addMins(dateStr, ev.time, 30);
+					} else {
+						endDT = addMins(dateStr, ev.time, 60);
+					}
+
+					rows.push(
+						"BEGIN:VEVENT",
+						`UID:flenmun-${dateStr}-${i}-${Date.now()}@flenmun2026`,
+						`DTSTAMP:${stamp}`,
+						`DTSTART;TZID=Europe/Berlin:${startDT}`,
+						`DTEND;TZID=Europe/Berlin:${endDT}`,
+						`SUMMARY:${escICS(ev.title)}`,
+					);
+
+					if (ev.location && ev.location !== "-") {
+						rows.push(`LOCATION:${escICS(ev.location)}`);
+					}
+
+					if (alarm) {
+						rows.push(
+							"BEGIN:VALARM",
+							"ACTION:DISPLAY",
+							`DESCRIPTION:${escICS(ev.title)}`,
+							`TRIGGER:-PT${alarmMins}M`,
+							"END:VALARM",
+						);
+					}
+
+					rows.push("END:VEVENT");
+				});
+
+				rows.push("END:VCALENDAR");
+				return rows.join("\r\n"); // RFC 5545 requires CRLF
+			}
+
+			/* ─────────────────────────────────────
+DOWNLOAD
+───────────────────────────────────── */
+			function onDownload() {
+				$errMsg.textContent = "";
+				try {
+					const raw = $input.value.trim();
+					if (!raw) throw new Error("empty");
+
+					const sched = parseSchedule(raw);
+					const alarm = $addNotif.checked;
+					const mins = Math.max(
+						1,
+						parseInt($notifMin.value, 10) || 5,
+					);
+					const content = buildICS(sched, alarm, mins);
+
+					const blob = new Blob([content], {
+						type: "text/calendar;charset=utf-8",
+					});
+					const url = URL.createObjectURL(blob);
+					const a = Object.assign(document.createElement("a"), {
+						href: url,
+						download: "flenmun-schedule.ics",
+					});
+					document.body.appendChild(a);
+					a.click();
+					a.remove();
+					URL.revokeObjectURL(url);
+				} catch (e) {
+					$errMsg.textContent =
+						"Ooops, failed to generate the schedule. Please, ask Artur Yurko about it.";
+					console.error("[FlensMUN]", e);
+				}
+			}
+		</script>
 	</body>
 </html>
