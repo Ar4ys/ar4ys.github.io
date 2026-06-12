@@ -1,1 +1,95 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="/img/icon-256.png"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="Never gonna give you up, Never gonna let you down"/><link rel="apple-touch-icon" href="/img/icon-256.png"/><link rel="manifest" href="/manifest.json"/><title>Roller :3</title><script defer="defer" src="/static/js/main.53810152.js"></script><link href="/static/css/main.c351a99c.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div></body></html>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>FlensMUN Schedule → Calendar</title>
+		<script src="./index.js" defer></script>
+		<link rel="stylesheet" href="./index.css" />
+	</head>
+	<body>
+		<header class="site-header">
+			<div class="hdr-icon">🗓️</div>
+			<h1>FlensMUN Schedule → Calendar</h1>
+			<p>Convert your Slack schedule to a .ics file in seconds</p>
+		</header>
+
+		<div class="layout">
+			<!-- ── Instructions ── -->
+			<aside class="panel-instructions">
+				<h2>How to use</h2>
+				<ol class="steps">
+					<ol class="steps">
+						<li>
+							<span
+								>Copy the schedule that
+								<strong>"FlensMUN - Schedule Bot"</strong> sent
+								you in Slack</span
+							>
+						</li>
+						<li><span>Paste it into the text box</span></li>
+						<li><span>Download the calendar events file</span></li>
+						<li>
+							<span
+								>Open the file in your calendar or just
+								click&thinsp;/&thinsp;tap on it — it should open
+								automatically</span
+							>
+						</li>
+						<li><span>Save the events</span></li>
+						<li><span>Profit! 🎉</span></li>
+					</ol>
+				</ol>
+			</aside>
+
+			<!-- ── Form ── -->
+			<main class="panel-form">
+				<h2>Paste Your Schedule</h2>
+
+				<textarea
+					id="scheduleInput"
+					placeholder="Paste your schedule here…"
+					spellcheck="false"
+					autocorrect="off"
+					autocomplete="off"
+				></textarea>
+
+				<button class="btn-clear" id="clearBtn" type="button">
+					✕ Clear
+				</button>
+
+				<div
+					class="msg-validation"
+					id="validationMsg"
+					aria-live="polite"
+				></div>
+
+				<hr class="divider" />
+
+				<label class="notif-label">
+					<input type="checkbox" id="addNotif" />
+					Add notification
+					<input
+						type="number"
+						id="notifMinutes"
+						value="5"
+						min="1"
+						max="1440"
+					/>
+					minutes before each entry
+				</label>
+
+				<button class="btn-download" id="downloadBtn" type="button">
+					⬇&nbsp;&nbsp;Download Schedule (.ics)
+				</button>
+
+				<div class="msg-error" id="errorMsg" aria-live="polite"></div>
+			</main>
+		</div>
+
+		<footer class="site-footer">
+			FlensMUN 2026 &nbsp;·&nbsp; June 11–14 &nbsp;·&nbsp; Flensburg,
+			Germany
+		</footer>
+	</body>
+</html>
