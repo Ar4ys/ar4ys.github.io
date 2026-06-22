@@ -17,6 +17,12 @@
 	}
 }
 
+html,
+body {
+	/* Disale double-tap zoom in mobile browsers */
+	touch-action: manipulation;
+}
+
 /* Basic Layout Setup */
 body {
 	background-color: var(--bg-color);
