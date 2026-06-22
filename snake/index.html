@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Zmejka</title>
+		<script src="./zmejka.js" defer></script>
+		<link rel="stylesheet" href="./zmejka.css" />
+	</head>
+	<body>
+		<div id="body-wrapper">
+			<div style="margin-bottom: auto; opacity: 0"></div>
+			<div id="header">
+				<h1>Score: <span id="score">0</span></h1>
+
+				<button id="play">
+					<div class="snake-head right"></div>
+					Play
+				</button>
+				<button id="pause" class="hidden">
+					<div class="food"></div>
+					Pause
+				</button>
+				<button id="restart" class="hidden">
+					<div class="restart-icon"></div>
+					Restart
+				</button>
+			</div>
+			<main id="game-board"></main>
+
+			<h2 id="title">Press Space to play/pause</h2>
+			<h2 id="title">Press Up/Down/Left/Right to move</h2>
+
+			<div id="dpad" style="margin-top: auto">
+				<button class="dpad-btn" data-direction="up"></button>
+				<button class="dpad-btn" data-direction="left"></button>
+				<div class="dpad-center"></div>
+				<button class="dpad-btn" data-direction="right"></button>
+				<button class="dpad-btn" data-direction="down"></button>
+			</div>
+		</div>
+
+		<div id="death-screen" class="hidden">
+			<div class="death-banner">
+				<h3 class="death-reload">Press R to Restart</h3>
+			</div>
+			<h1 class="death-text">YOU DIED</h1>
+		</div>
+		<div id="victory-screen" class="hidden">
+			<div class="victory-banner">
+				<h3 class="victory-reload">Press R to Restart</h3>
+			</div>
+			<h1 class="victory-text">VICTORY ACHIEVED</h1>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,544 @@
+/* Generated with Gemini cause I'm lazy bastard */
+
+/* Color Variables */
+:root {
+	--bg-color: #121214;
+	--board-color: #1a1a1e;
+	--snake-color: #00ff88;
+	--food-color: #ff3366;
+	--text-color: #e0e0e6;
+	--accent-color: #00e5ff;
+	--restart-color: #ff9900;
+	--grid-size: 11; /* Change this to match your JS grid dimensions */
+	--grid-px: 30px;
+
+	@media (max-width: 700px) {
+		--grid-px: 40px;
+	}
+}
+
+/* Basic Layout Setup */
+body {
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	font-family: "Courier New", Courier, monospace;
+	margin: 0;
+}
+
+#body-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 22px;
+	box-sizing: border-box;
+	height: 100vh;
+	width: fit-content;
+	margin: auto;
+	padding: 50px 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+}
+
+button {
+	background-color: var(--board-color);
+	border: 4px solid var(--accent-color);
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+	border-radius: 8px;
+	color: var(--text-color);
+	font-size: 28px;
+	font-family: inherit;
+	cursor: pointer;
+	display: flex;
+	gap: 8px;
+	padding: 10px 15px;
+
+	/* Active pressing states */
+	&:active,
+	&.active {
+		background-color: var(--accent-color);
+		box-shadow: 0 0 15px var(--accent-color);
+		color: var(--board-color);
+	}
+}
+
+#header {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#play,
+#pause {
+	.snake-head,
+	.food {
+		width: var(--grid-px);
+		height: var(--grid-px);
+	}
+}
+
+#restart {
+	position: relative;
+	z-index: 150;
+
+	/* Target the restart icon container */
+	.restart-icon {
+		width: var(--grid-px);
+		height: var(--grid-px);
+		position: relative;
+		display: inline-block;
+		/* Optional: Applies a subtle neon glow matching your other elements */
+		filter: drop-shadow(0 0 4px var(--restart-color));
+
+		/* 1. The Clockwise Circular Arrow Body */
+		&::before {
+			content: "";
+			position: absolute;
+			box-sizing: border-box;
+			width: 75%;
+			height: 75%;
+			top: 12.5%;
+			left: 12.5%;
+			border: 4px solid var(--restart-color);
+			border-radius: 50%;
+			/* Clears out the top-right gap for a clockwise flow */
+			border-top-color: transparent;
+			transform: rotate(45deg);
+		}
+
+		/* 2. The Arrow Tip pointing forward */
+		&::after {
+			content: "";
+			position: absolute;
+			width: 0;
+			height: 0;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-bottom: 9px solid var(--restart-color);
+			/* Anchors the arrowhead directly to the open gap */
+			top: 2px;
+			right: 8px;
+			transform: rotate(-30deg) translateY(-2px);
+		}
+	}
+}
+
+/* The HTML Game Board Container */
+#game-board {
+	display: grid;
+	grid-template-columns: repeat(var(--grid-size), var(--grid-px));
+	grid-template-rows: repeat(var(--grid-size), var(--grid-px));
+	background-color: var(--board-color);
+	border: 4px solid var(--accent-color);
+	box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+	border-radius: 8px;
+}
+
+/* The Snake Pieces */
+.snake-part {
+	background-color: var(--snake-color);
+	box-shadow: 0 0 8px var(--snake-color); /* Gives the snake a subtle neon glow */
+	border-radius: 4px; /* Slightly rounds the edges of the snake */
+
+	&.eaten {
+		opacity: 0.4;
+	}
+}
+
+/* The Snake Head (Defaults to pointing UP) */
+.snake-head {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	/* The shadow lives here, so it never gets clipped */
+	filter: drop-shadow(0 0 8px var(--snake-color));
+
+	/* The inner pseudo-element handles the shape and color */
+	&::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: var(--snake-color);
+		clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+	}
+
+	/* Direction Rotations */
+	&.up {
+		transform: rotate(0deg);
+	}
+
+	&.right {
+		transform: rotate(90deg);
+	}
+
+	&.down {
+		transform: rotate(180deg);
+	}
+
+	&.left {
+		transform: rotate(270deg);
+	}
+}
+
+/* The Food Piece */
+.food {
+	background-color: var(--food-color);
+	box-shadow: 0 0 12px var(--food-color); /* Gives the food a brighter glow */
+	border-radius: 50%; /* Makes the food a perfect circle */
+}
+
+/* --- Dark Souls Death Screen --- */
+
+#death-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+	pointer-events: none; /* Stops interaction while active */
+	opacity: 0;
+	transition: opacity 1.5s ease-in-out;
+
+	/* Background flash and slow vignette overlay */
+	&.active {
+		opacity: 1;
+		pointer-events: all; /* Blocks clicking the game during death */
+		background: radial-gradient(
+			circle,
+			rgba(0, 0, 0, 0) 30%,
+			rgba(0, 0, 0, 0.8) 100%
+		);
+		animation: screenFlash 4s forwards;
+		animation-delay: 1s;
+
+		.death-banner {
+			height: 160px; /* Expands open when dead */
+		}
+
+		.death-reload {
+			animation: deliberateFadeIn 1.5s cubic-bezier(0.25, 1, 0.5, 1)
+				forwards;
+			animation-delay: 1.5s;
+		}
+
+		.death-text {
+			animation:
+				deliberateFadeIn 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+				slowPan 5s linear forwards;
+			animation-delay: 1.5s;
+		}
+	}
+
+	/* The cinematic black horizontal bar */
+	.death-banner {
+		position: absolute;
+		width: 100%;
+		height: 0;
+		background: rgba(0, 0, 0, 0.75);
+		box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.8);
+		transition: height 0.8s ease-in-out;
+		transition-delay: 0.2s;
+		z-index: 1;
+	}
+
+	/* The Crimson Text */
+	.death-text {
+		font-family: "Times New Roman", Times, Georgia, serif;
+		color: #8a0303; /* Deep Dark Souls Crimson */
+		font-size: 5rem;
+		font-weight: 500;
+		letter-spacing: 1.5rem;
+		padding-left: 1.5rem; /* Offsets letter-spacing centering bug */
+		margin: 0;
+		z-index: 2;
+		text-shadow:
+			0 0 15px rgba(0, 0, 0, 0.8),
+			0 0 2px #000;
+		opacity: 0;
+		transform: scale(0.85);
+	}
+
+	.death-reload {
+		position: absolute;
+		bottom: -10px;
+		left: 50%;
+		transform: translateX(-50%);
+		opacity: 0;
+	}
+}
+
+/* Utility to completely hide it when not initialized */
+.hidden {
+	display: none !important;
+}
+
+/* --- Animations --- */
+
+@keyframes screenFlash {
+	0% {
+		background-color: rgba(138, 3, 3, 0.2);
+	} /* Subtle red tint on impact */
+	15% {
+		background-color: rgba(0, 0, 0, 0);
+	}
+	100% {
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+}
+
+@keyframes deliberateFadeIn {
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes slowPan {
+	0% {
+		transform: scale(0.9);
+		letter-spacing: 1.2rem;
+	}
+	100% {
+		transform: scale(1.05);
+		letter-spacing: 1.8rem;
+	}
+}
+
+/* --- Dark Souls Victory Screen --- */
+#victory-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 100;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 1.2s ease-in-out;
+
+	/* Nested .active class on the parent */
+	&.active {
+		opacity: 1;
+		pointer-events: all;
+		background: radial-gradient(
+			circle,
+			rgba(0, 0, 0, 0) 40%,
+			rgba(0, 0, 0, 0.6) 100%
+		);
+		animation: goldFlash 3.5s forwards;
+
+		/* Targets banner when active */
+		.victory-banner {
+			height: 140px;
+		}
+
+		/* Targets text when active */
+		.victory-text {
+			animation:
+				deliberateFadeIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+				slowExpand 4.5s linear forwards;
+			animation-delay: 0.3s;
+		}
+
+		.victory-reload {
+			animation: deliberateFadeIn 1.2s cubic-bezier(0.25, 1, 0.5, 1)
+				forwards;
+			animation-delay: 0.3s;
+		}
+	}
+
+	/* Nested child elements */
+	.victory-banner {
+		position: absolute;
+		width: 100%;
+		height: 0;
+		background: linear-gradient(
+			90deg,
+			rgba(0, 0, 0, 0) 0%,
+			rgba(15, 12, 0, 0.8) 25%,
+			rgba(25, 20, 5, 0.85) 50%,
+			rgba(15, 12, 0, 0.8) 75%,
+			rgba(0, 0, 0, 0) 100%
+		);
+		box-shadow: 0 0 25px 5px rgba(255, 204, 0, 0.05);
+		transition: height 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+		transition-delay: 0.1s;
+		z-index: 1;
+	}
+
+	.victory-text {
+		font-family: "Times New Roman", Times, Georgia, serif;
+		color: #ffda44;
+		font-size: 4.5rem;
+		font-weight: 500;
+		letter-spacing: 1.8rem;
+		padding-left: 1.8rem;
+		margin: 0;
+		z-index: 2;
+		text-shadow:
+			0 0 20px rgba(255, 204, 0, 0.4),
+			0 0 2px #000;
+		opacity: 0;
+		transform: scale(0.9);
+	}
+
+	.victory-reload {
+		position: absolute;
+		bottom: -10px;
+		left: 50%;
+		transform: translateX(-50%);
+		opacity: 0;
+	}
+}
+
+/* Victory Keyframes */
+@keyframes goldFlash {
+	0% {
+		background-color: rgba(255, 218, 68, 0.25);
+		filter: brightness(2);
+	}
+	15% {
+		background-color: rgba(255, 218, 68, 0.02);
+		filter: brightness(1);
+	}
+	100% {
+		background-color: rgba(0, 0, 0, 0.2);
+	}
+}
+@keyframes slowExpand {
+	0% {
+		transform: scale(0.95);
+		letter-spacing: 1.4rem;
+		filter: blur(2px);
+	}
+	15% {
+		filter: blur(0px);
+	}
+	100% {
+		transform: scale(1.04);
+		letter-spacing: 2rem;
+	}
+}
+
+/* --- The D-Pad (3x3 Grid) --- */
+#dpad {
+	display: grid;
+	grid-template-columns: repeat(3, 70px);
+	grid-template-rows: repeat(3, 70px);
+	background-color: rgba(26, 26, 30, 0.5); /* Semi-transparent board color */
+	border-radius: 12px;
+	padding: 5px;
+	border: 2px solid rgba(0, 229, 255, 0.3);
+	max-width: 600px;
+
+	/* Pushes it to the bottom of the screen if using flex body */
+	/*margin-top: auto; */
+
+	@media (max-width: 700px) {
+		grid-template-columns: repeat(3, 100px);
+		grid-template-rows: repeat(3, 100px);
+	}
+
+	.dpad-btn {
+		border-width: 3px;
+		position: relative;
+		padding: 0;
+		width: 100%;
+		height: 100%;
+
+		/* Pure CSS Arrow Indicators inside D-pad buttons */
+		&::after {
+			content: "";
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			border: 12px solid transparent;
+		}
+
+		/* Positioning buttons inside the 3x3 grid */
+		&[data-direction="up"] {
+			grid-column: 2;
+			grid-row: 1;
+
+			&::after {
+				border-bottom-color: var(--text-color);
+				margin-top: -9px;
+			}
+
+			&:active::after,
+			&.active::after {
+				border-bottom-color: var(--board-color);
+			}
+		}
+
+		&[data-direction="left"] {
+			grid-column: 1;
+			grid-row: 2;
+
+			&::after {
+				border-right-color: var(--text-color);
+				margin-left: -9px;
+			}
+
+			&:active::after,
+			&.active::after {
+				border-right-color: var(--board-color);
+			}
+		}
+
+		&[data-direction="right"] {
+			grid-column: 3;
+			grid-row: 2;
+
+			&::after {
+				border-left-color: var(--text-color);
+				margin-left: 9px;
+			}
+
+			&:active::after,
+			&.active::after {
+				border-left-color: var(--board-color);
+			}
+		}
+
+		&[data-direction="down"] {
+			grid-column: 2;
+			grid-row: 3;
+
+			&::after {
+				border-top-color: var(--text-color);
+				margin-top: 9px;
+			}
+
+			&:active::after,
+			&.active::after {
+				border-top-color: var(--board-color);
+			}
+		}
+	}
+
+	.dpad-center {
+		grid-column: 2;
+		grid-row: 2;
+		background-color: var(--board-color);
+		border-radius: 4px;
+	}
+}
