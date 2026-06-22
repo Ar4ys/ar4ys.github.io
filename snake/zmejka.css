@@ -11,10 +11,6 @@
 	--restart-color: #ff9900;
 	--grid-size: 11; /* Change this to match your JS grid dimensions */
 	--grid-px: 30px;
-
-	@media (max-width: 700px) {
-		--grid-px: 40px;
-	}
 }
 
 html,
@@ -458,8 +454,8 @@ button {
 	/*margin-top: auto; */
 
 	@media (max-width: 700px) {
-		grid-template-columns: repeat(3, 100px);
-		grid-template-rows: repeat(3, 100px);
+		grid-template-columns: repeat(3, 80px);
+		grid-template-rows: repeat(3, 80px);
 	}
 
 	.dpad-btn {
